@@ -42,14 +42,6 @@
 {
     [super cellDidLoad];
     self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    
-    self.valueLabel = [[UILabel alloc] initWithFrame:CGRectNull];
-    self.valueLabel.font = [UIFont systemFontOfSize:17];
-    self.valueLabel.backgroundColor = [UIColor clearColor];
-    self.valueLabel.textColor = self.detailTextLabel.textColor;
-    self.valueLabel.highlightedTextColor = [UIColor whiteColor];
-    self.valueLabel.textAlignment = NSTextAlignmentRight;
-    [self.contentView addSubview:self.valueLabel];
 }
 
 - (void)cellWillAppear
@@ -58,9 +50,8 @@
     self.accessoryType = self.item.accessoryType;
     self.textLabel.backgroundColor = [UIColor clearColor];
     self.textLabel.text = self.item.title.length == 0 ? @" " : self.item.title;
-    self.detailTextLabel.text = @"";
-    self.valueLabel.text = self.item.detailLabelText;
-    
+    self.detailTextLabel.text = self.item.detailLabelText;
+
     if (!self.item.title) {
         self.valueLabel.textAlignment = NSTextAlignmentLeft;
     }
