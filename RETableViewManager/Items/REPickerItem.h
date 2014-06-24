@@ -31,6 +31,7 @@
 @property (strong, readwrite, nonatomic) NSArray *options;
 @property (strong, readwrite, nonatomic) NSArray *value;
 @property (copy, readwrite, nonatomic) NSString *placeholder;
+@property (copy, readwrite, nonatomic) NSArray *valueFormatters;
 @property (assign, readwrite, nonatomic) BOOL inlinePicker;
 @property (strong, readwrite, nonatomic) REInlinePickerItem *inlinePickerItem;
 @property (copy, readwrite, nonatomic) void (^onChange)(REPickerItem *item);

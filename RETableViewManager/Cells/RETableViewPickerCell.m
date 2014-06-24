@@ -207,7 +207,12 @@
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
     NSArray *items = [self.item.options objectAtIndex:component];
-    return [items objectAtIndex:row];
+    NSString *valueFormatter = [self.item.valueFormatters objectAtIndex:component];
+    NSString *valueName = [items objectAtIndex:row];
+    if (valueFormatter.length) {
+        return [NSString stringWithFormat:valueFormatter, valueName];
+    }
+    return valueName;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
