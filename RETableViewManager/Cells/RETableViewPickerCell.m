@@ -83,7 +83,7 @@
     self.textLabel.text = self.item.title.length == 0 ? @" " : self.item.title;
     self.textField.inputView = self.pickerView;
 
-    self.valueLabel.text = self.item.value ? [self.item.value componentsJoinedByString:@", "] : @"";
+    self.valueLabel.text = self.item.value ? [self getFormattedValues:self.item.value] : @"";
     self.placeholderLabel.text = self.item.placeholder;
     self.placeholderLabel.hidden = self.valueLabel.text.length > 0;
 
@@ -157,15 +157,20 @@
         [value addObject:valueText];
     }];
     self.item.value = [value copy];
-    for (int i = 0; i < value.count; ++i) {
+    self.valueLabel.text = value ? [self getFormattedValues:self.item.value] : @"";
+    self.placeholderLabel.hidden = self.valueLabel.text.length > 0;
+}
+
+- (NSString *)getFormattedValues:(NSArray *)values {
+    NSMutableArray *mutableValues = [values mutableCopy];
+    for (int i = 0; i < mutableValues.count; ++i) {
         NSString *valueFormatter = [self.item.valueFormatters objectAtIndex:i];
-        NSString *originValue = value[i];
+        NSString *originValue = mutableValues[i];
         if (valueFormatter.length && originValue.length) {
-            value[i] = [NSString stringWithFormat:valueFormatter, originValue];
+            mutableValues[i] = [NSString stringWithFormat:valueFormatter, originValue];
         }
     }
-    self.valueLabel.text = value ? [value componentsJoinedByString:@", "] : @"";
-    self.placeholderLabel.hidden = self.valueLabel.text.length > 0;
+    return [mutableValues componentsJoinedByString:@", "];
 }
 
 #pragma mark -
