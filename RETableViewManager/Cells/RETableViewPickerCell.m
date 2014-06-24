@@ -50,13 +50,13 @@
 {
     [super cellDidLoad];
     self.textLabel.backgroundColor = [UIColor clearColor];
-    
+
     self.textField = [[UITextField alloc] initWithFrame:CGRectNull];
     self.textField.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
     self.textField.inputAccessoryView = self.actionBar;
     self.textField.delegate = self;
     [self addSubview:self.textField];
-    
+
     self.valueLabel = [[UILabel alloc] initWithFrame:CGRectNull];
     self.valueLabel.font = [UIFont systemFontOfSize:17];
     self.valueLabel.backgroundColor = [UIColor clearColor];
@@ -65,14 +65,14 @@
     self.valueLabel.textAlignment = NSTextAlignmentRight;
     self.valueLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     [self.contentView addSubview:self.valueLabel];
-    
+
     self.placeholderLabel = [[UILabel alloc] initWithFrame:CGRectNull];
     self.placeholderLabel.font = [UIFont systemFontOfSize:17];
     self.placeholderLabel.backgroundColor = [UIColor clearColor];
     self.placeholderLabel.textColor = [UIColor lightGrayColor];
     self.placeholderLabel.highlightedTextColor = [UIColor whiteColor];
     [self.contentView addSubview:self.placeholderLabel];
-    
+
     self.pickerView = [[UIPickerView alloc] init];
     self.pickerView.delegate = self;
     self.pickerView.dataSource = self;
@@ -82,15 +82,15 @@
 {
     self.textLabel.text = self.item.title.length == 0 ? @" " : self.item.title;
     self.textField.inputView = self.pickerView;
-    
+
     self.valueLabel.text = self.item.value ? [self.item.value componentsJoinedByString:@", "] : @"";
     self.placeholderLabel.text = self.item.placeholder;
     self.placeholderLabel.hidden = self.valueLabel.text.length > 0;
-    
+
     if (!self.item.title) {
         self.valueLabel.textAlignment = NSTextAlignmentLeft;
     }
-    
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED < 70000
     self.valueLabel.textColor = self.item.inlinePickerItem ? [self performSelector:@selector(tintColor) withObject:nil] : self.detailTextLabel.textColor;
 #endif
@@ -101,10 +101,10 @@
     [super layoutSubviews];
     self.textField.frame = CGRectNull;
     self.textField.alpha = 0;
-    
+
     [self layoutDetailView:self.valueLabel minimumWidth:[self.valueLabel.text re_sizeWithFont:self.valueLabel.font].width];
     [self layoutDetailView:self.placeholderLabel minimumWidth:[self.placeholderLabel.text re_sizeWithFont:self.placeholderLabel.font].width];
-    
+
     if ([self.tableViewManager.delegate respondsToSelector:@selector(tableView:willLayoutCellSubviews:forRowAtIndexPath:)])
         [self.tableViewManager.delegate tableView:self.tableViewManager.tableView willLayoutCellSubviews:self forRowAtIndexPath:[self.tableViewManager.tableView indexPathForCell:self]];
 }
@@ -112,7 +112,7 @@
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-    
+
     if (selected && !self.item.inlinePicker) {
         [self.textField becomeFirstResponder];
         [self.item.options enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -120,7 +120,7 @@
                 [self.pickerView selectRow:[[self.item.options objectAtIndex:idx] indexOfObject:[self.item.value objectAtIndex:idx]] inComponent:idx animated:NO];
         }];
     }
-    
+
     if (selected && self.item.inlinePicker && !self.item.inlinePickerItem) {
         [self setSelected:NO animated:NO];
         [self.item deselectRowAnimated:NO];
@@ -157,7 +157,14 @@
         [value addObject:valueText];
     }];
     self.item.value = [value copy];
-    self.valueLabel.text = self.item.value ? [self.item.value componentsJoinedByString:@", "] : @"";
+    for (int i = 0; i < value.count; ++i) {
+        NSString *valueFormatter = [self.item.valueFormatters objectAtIndex:i];
+        NSString *originValue = value[i];
+        if (valueFormatter.length && originValue.length) {
+            value[i] = [NSString stringWithFormat:valueFormatter, originValue];
+        }
+    }
+    self.valueLabel.text = value ? [value componentsJoinedByString:@", "] : @"";
     self.placeholderLabel.hidden = self.valueLabel.text.length > 0;
 }
 
@@ -168,7 +175,7 @@
 {
     if (!self.selected)
         [self setSelected:YES animated:NO];
-    
+
     NSIndexPath *indexPath = [self indexPathForNextResponder];
     if (indexPath) {
         textField.returnKeyType = UIReturnKeyNext;
